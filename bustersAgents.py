@@ -163,4 +163,35 @@ class GreedyBustersAgent(BustersAgent):
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Define a priority queue for getting the ghost with the least distance from the pacman.
+        ghostQueue = util.PriorityQueue()
+
+        for ghost in livingGhostPositionDistributions:
+            # For each living ghost, get the position of the ghost by picking the maximum out of the belief distribution
+            # of the possible living ghost positions.
+            position = ghost.argMax()
+            # Put the ghost position obtained from previous step in the priority queue and put the priority
+            # as the distance of the ghost from pacman's current position.
+            ghostQueue.push(position, self.distancer.getDistance(pacmanPosition, position))
+
+        # Get the nearest ghost to the pacman by popping out the ghost position from the priority queue.
+        nearestGhost = ghostQueue.pop()
+        # Calculate the distance from the pacman's current position to the nearest ghost position.
+        current = self.distancer.getDistance(pacmanPosition, nearestGhost)
+        for step in [Directions.WEST, Directions.EAST, Directions.NORTH, Directions.SOUTH]:
+            # For each possible direction (NORTH, SOUTH, EAST & WEST), calculate the distance from pacman's
+            # new possible position to the nearest ghost. If we find a position which is nearer to the ghost,
+            # we immediately return the action which will lead to that position without checking other positions.
+            # We need the try and except blocks for the cases in which the position traversed is out of the grid.
+            # In those cases, the algorithm will just pass over that position without doing anything.
+            try:
+                next = self.distancer.getDistance(nearestGhost, Actions.getSuccessor(pacmanPosition, step))
+                if next < current:
+                    return step
+            except Exception:
+                # The current position is not in the grid.
+                pass
+            
+        # return STOP if all the possible directions have distance to the nearest ghost more than
+        # the pacman's current position.
+        return Directions.STOP
