@@ -167,7 +167,7 @@ class GreedyBustersAgent(BustersAgent):
         ghostQueue = util.PriorityQueue()
 
         for ghost in livingGhostPositionDistributions:
-            # For each lving ghost, get the position of the ghost by picking the maximum out of the belief distribution
+            # For each living ghost, get the position of the ghost by picking the maximum out of the belief distribution
             # of the possible living ghost positions.
             position = ghost.argMax()
             # Put the ghost position obtained from previous step in the priority queue and put the priority
@@ -193,5 +193,5 @@ class GreedyBustersAgent(BustersAgent):
                 pass
             
         # return STOP if all the possible directions have distance to the nearest ghost more than
-        # the pacman's current positon.
+        # the pacman's current position.
         return Directions.STOP
